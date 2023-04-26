@@ -1,0 +1,26 @@
+micronaut:
+  application:
+    name: employee
+  config-client:
+    enabled: true
+  security:
+    token:
+      roles-name: 'groups'
+      jwt:
+        enabled: true
+        signatures:
+          jwks:
+            keycloak:
+              url: 'http://nekonex-ingress.info/api/keycloak/realms/nekonex_realm/protocol/openid-connect/certs'
+  logging:
+    level:
+        io.micronaut.security: TRACE
+kubernetes:
+  client:
+    config-maps:
+      labels:
+        - app: employee
+    secrets:
+      enabled: true
+      labels:
+        - app: employee
