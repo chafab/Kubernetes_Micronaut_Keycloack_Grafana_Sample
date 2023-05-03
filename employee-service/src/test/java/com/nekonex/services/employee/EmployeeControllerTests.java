@@ -87,11 +87,7 @@ public class EmployeeControllerTests {
 
     @Test
     void count() {
-        //Can be accessed without login
-        int val = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/count"), Integer.class);
-        assertEquals(val, 1);
-        //Can be accessed with login
-        val = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/count").basicAuth("john", "secret"), Integer.class);
+        int val  = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/count").basicAuth("john", "secret"), Integer.class);
         assertEquals(val, 1);
         //add a user and verify count
         Employee employee = Instancio.of(Employee.class)
@@ -100,7 +96,15 @@ public class EmployeeControllerTests {
         employee = client.toBlocking()
                 .retrieve(HttpRequest.POST("/api/employees", employee)
                         .basicAuth("john", "secret"), Employee.class);
-        val = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/count"), Integer.class);
+        val = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/count").basicAuth("john", "secret"), Integer.class);
         assertEquals(val, 2);
+    }
+
+    @Test
+    void helloAnonymous() {
+        String val  = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/AnonymousHello"), String.class);
+        assertEquals(val, "Hello Anonymous");
+        val  = client.toBlocking().retrieve(HttpRequest.GET("/api/employees/AnonymousHello").basicAuth("john", "secret"), String.class);
+        assertEquals(val, "Hello Anonymous");
     }
 }

@@ -40,10 +40,6 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
-            <artifactId>micronaut-http-server-netty</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
             <artifactId>micronaut-inject</artifactId>
         </dependency>
         <dependency>
@@ -130,6 +126,11 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <from>
+                        <image>azul/zulu-openjdk:17</image>
+                    </from>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -139,7 +140,7 @@
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=com.nekonex.services</arg>
                         <arg>-Amicronaut.processing.module=department-service</arg>
-						<arg>-verbose</arg>
+						<!-- <arg>-verbose</arg> -->
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>

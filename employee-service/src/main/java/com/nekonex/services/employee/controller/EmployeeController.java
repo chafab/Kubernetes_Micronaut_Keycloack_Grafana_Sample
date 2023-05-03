@@ -37,12 +37,14 @@ public class EmployeeController {
 
 	@Get("/SecureHello")
 	public String hello() {
+		LOGGER.info("Secure hello");
 		return "Hello authenticated user~";
 	}
 
 	@Get("/AnonymousHello")
 	@Secured(SecurityRule.IS_ANONYMOUS)
 	public String helloAnonymous() {
+		LOGGER.info("Anonymous hello");
 		return "Hello Anonymous";
 	}
 
@@ -66,6 +68,7 @@ public class EmployeeController {
 
 	@Get("/count")
 	long count() {
+		LOGGER.info("Count");
 		return repository.count();
 	}
 

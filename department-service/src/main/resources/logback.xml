@@ -2,7 +2,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} &lt;%thread&gt; [%X{traceId}] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -11,7 +11,7 @@
     </root>
 
     <logger name="io.micronaut.context" level="INFO" />
-    <logger name="io.micronaut.http.client" level="DEBUG"/>
-    <logger name="io.micronaut.kubernetes" level="DEBUG"/>
+    <logger name="io.micronaut.http.client" level="INFO"/>
+    <logger name="io.micronaut.kubernetes" level="INFO"/>
 
 </configuration>

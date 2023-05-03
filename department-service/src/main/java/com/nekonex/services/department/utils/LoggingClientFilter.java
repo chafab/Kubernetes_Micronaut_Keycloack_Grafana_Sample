@@ -1,4 +1,4 @@
-package com.nekonex.services.employee.utils;
+package com.nekonex.services.department.utils;
 
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
@@ -8,9 +8,8 @@ import io.micronaut.http.filter.HttpClientFilter;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
 
-@Filter(patterns = "/**")
+@Filter
 @Slf4j
 @Singleton
 public class LoggingClientFilter implements HttpClientFilter {
