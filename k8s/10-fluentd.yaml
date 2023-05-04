@@ -7,47 +7,56 @@ metadata:
     app: fluentd-logging
 data:
   fluent.conf: |
-      <source>
+    <source>
       @type tail
+      @id in_tail_container_logs
       path /var/log/containers/*.log
       pos_file /var/log/fluentd-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
-      @type json
-      time_format %Y-%m-%dT%H:%M:%S.%NZ
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
       </parse>
-      </source>
-      
-      <filter kubernetes.var.log.containers.**>
+    </source>
+    <match fluentd.**>
+      @type null
+    </match>
+    <match kubernetes.var.log.containers.**fluentd**.log>
+      @type null
+    </match>
+    <filter kubernetes.var.log.containers.**>
       @type record_transformer
       enable_ruby
       remove_keys kubernetes, docker
       <record>
-      app ${ record.dig("kubernetes", "labels", "app") }
-      job ${ record.dig("kubernetes", "labels", "app") }
-      namespace ${ record.dig("kubernetes", "namespace_name") }
-      pod ${ record.dig("kubernetes", "pod_name") }
-      container ${ record.dig("kubernetes", "container_name") }
+        app ${ record.dig("kubernetes", "labels", "app") }
+        job ${ record.dig("kubernetes", "labels", "app") }
+        namespace ${ record.dig("kubernetes", "namespace_name") }
+        pod ${ record.dig("kubernetes", "pod_name") }
+        container ${ record.dig("kubernetes", "container_name") }
+        traceId ${record["traceId"]}
       </record>
-      </filter>
-      
-      <match kubernetes.var.log.containers.**>
+    </filter>
+    
+    <match kubernetes.var.log.containers.**>
       @type copy
       <store>
-      @type loki
-      url "http://loki.default.svc.cluster.local:3100"
-      # extra_labels {"env":"dev"}
-      extract_kubernetes_labels true
-      remove_keys kubernetes
-      flush_interval 10s
-      flush_at_shutdown true
-      buffer_chunk_limit 1m
+        @type loki
+        url "http://loki:3100"
+        extra_labels {"env":"dev"}
+        label_keys "app,job,namespace,pod"
+        flush_interval 10s
+        flush_at_shutdown true
+        buffer_chunk_limit 1m
+        <label>
+          trace_id ${record["traceId"] if record["traceId"]}
+        </label>
       </store>
       <store>
-      @type stdout
+        @type stdout
       </store>
-      </match>
+    </match>
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -73,7 +82,7 @@ spec:
             - "/fluentd/plugins"
           env:
             - name: LOKI_URL
-              value: http://loki.default.svc.cluster.local:3100
+              value: http://loki:3100
             - name: LOKI_USERNAME
               value: ""
             - name: LOKI_PASSWORD

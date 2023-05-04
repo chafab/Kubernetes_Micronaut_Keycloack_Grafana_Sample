@@ -20,12 +20,13 @@ public class TraceIdServerFilter implements HttpServerFilter {
 
     @Override
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-        log.info("Request URL: {}", request.getUri());
+
         String uuid = request.getHeaders().contains("X-TRACE-ID") ?
                 request.getHeaders().get("X-TRACE-ID") :
                 UUID.randomUUID().toString();
         request.setAttribute("traceId", uuid);
         MDC.put("traceId", uuid);
+        log.info("Request URL: {} traceId: {}", request.getUri(), uuid);
         return Flux.from(chain.proceed(request)).map(
                 mutableHTTPResponse -> {
                     MDC.put("traceId", uuid);
