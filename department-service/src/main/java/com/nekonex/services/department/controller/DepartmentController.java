@@ -57,10 +57,11 @@ public class DepartmentController {
 
 	@Get("/organization/{organizationId}/with-employees")
 	public List<Department> findByOrganizationWithEmployees(HttpRequest<?> request, Long organizationId) {
-		LOGGER.info("Department find: organizationId={}", organizationId);
+		String uuid = request.getAttribute("traceId").toString();
+		LOGGER.info("Department find: organizationId={}, uuid{}", organizationId, uuid);
 		String bearerToken = request.getHeaders().getAuthorization().orElse(null);
 		List<Department> departments = repository.findByOrganization(organizationId);
-		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(bearerToken, d.getId())));
+		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(bearerToken, uuid, d.getId())));
 		return departments;
 	}
 

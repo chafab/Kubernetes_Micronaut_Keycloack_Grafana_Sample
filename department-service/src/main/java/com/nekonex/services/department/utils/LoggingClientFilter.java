@@ -8,15 +8,20 @@ import io.micronaut.http.filter.HttpClientFilter;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-
-@Filter
+import org.slf4j.MDC;
+@Filter(serviceId = "*", patterns = "/**")
 @Slf4j
 @Singleton
 public class LoggingClientFilter implements HttpClientFilter {
 
     @Override
     public Publisher<? extends HttpResponse<?>> doFilter(MutableHttpRequest<?> request, ClientFilterChain chain) {
-        String traceId = request.getAttribute("traceId", String.class).orElse(null);
+        String traceId = request.getHeaders().contains("X-TRACE-ID") ?
+                request.getHeaders().get("X-TRACE-ID") :
+                request.getAttribute("traceId", String.class).orElse(null);
+        if (traceId == null){
+            traceId = MDC.get("traceId");
+        }
         log.info("Request URL: {}, TraceId: {}", request.getUri(), traceId);
         if (traceId != null) {
             request.getHeaders().add("X-TRACE-ID", traceId);
