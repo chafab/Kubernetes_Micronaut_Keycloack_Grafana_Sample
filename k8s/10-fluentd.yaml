@@ -31,7 +31,13 @@ data:
     <match fluentd.**>
       @type null
     </match>
+    <match loki.**>
+      @type null
+    </match>
     <match kubernetes.var.log.containers.**fluentd**.log>
+      @type null
+    </match>
+    <match kubernetes.var.log.containers.**loki**.log>
       @type null
     </match>
     <filter kubernetes.**>

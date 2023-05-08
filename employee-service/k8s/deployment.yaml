@@ -4,6 +4,7 @@ metadata:
   name: employee
   labels:
     app: employee
+    monitor: department
 data:
   application.yaml: |-
     mongodb:

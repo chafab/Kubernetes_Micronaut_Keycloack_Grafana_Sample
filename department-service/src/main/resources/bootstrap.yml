@@ -12,7 +12,29 @@ micronaut:
           jwks:
             keycloak:
               url: 'http://nekonex-ingress.info/api/keycloak/realms/nekonex_realm/protocol/openid-connect/certs'
-
+  endpoints:
+    prometheus:
+      sensitive: false
+      enabled: true
+      details-visible: ANONYMOUS
+    health:
+      enabled: true
+      sensitive: false
+      details-visible: ANONYMOUS
+    metrics:
+      enabled: true
+      sensitive: false
+      details-visible: ANONYMOUS
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        config:
+          descriptions: true
+  logging:
+    level:
+      io.micronaut.security: TRACE
 kubernetes:
   client:
     config-maps:

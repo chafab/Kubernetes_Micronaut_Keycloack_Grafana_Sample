@@ -4,6 +4,7 @@ metadata:
   name: department
   labels:
     app: department
+    monitor: department
 data:
   application.yaml: |-
     endpoints:
