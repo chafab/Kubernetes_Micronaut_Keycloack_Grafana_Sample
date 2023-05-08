@@ -34,6 +34,7 @@ The commands below are used to set the databases, volumes and loadbalancer that 
 `kubectl apply -f 04-keycloak-deployment.yaml` : creates the keycloak service and can be accessed by forwarding the port and using the login admin password admin
 `kubectl apply -f 05-haproxy-ingress.yaml` : creates the ingress component that can be used to access the different services
 `kubectl apply -f 06-ingress-deployment.yaml` : creates the ingress component that can be used to access the different services
+TODO Write the other yaml files that needs to be applied and write a description 
 `kubectl get deployments -o yaml` : get all deployments
 if there are any issues with 6th deployment file apply :
 Now each of our services can be run in each directory by running
