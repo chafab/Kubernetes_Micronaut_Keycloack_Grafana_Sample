@@ -35,6 +35,9 @@ micronaut:
   logging:
     level:
       io.micronaut.security: TRACE
+  openapi:
+    views:
+      enabled: true
 kubernetes:
   client:
     config-maps:

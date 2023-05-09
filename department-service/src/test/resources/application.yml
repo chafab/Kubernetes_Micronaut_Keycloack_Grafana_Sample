@@ -1,3 +1,6 @@
 mongodb:
   database: test
   collection: department
+openapi:
+  views:
+    enabled: true

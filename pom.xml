@@ -25,7 +25,7 @@
         <sonar.projectKey>kubernetes-micronaut-keycloack-sample</sonar.projectKey>
         <sonar.organization>nekonex</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <micronaut.version>3.8.3</micronaut.version>
+        <micronaut.version>3.9.1</micronaut.version>
         <jib.maven-plugin-version>1.8.0</jib.maven-plugin-version>
     </properties>
 
