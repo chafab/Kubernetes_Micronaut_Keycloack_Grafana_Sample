@@ -11,6 +11,6 @@ import io.micronaut.http.client.annotation.Client;
 public interface EmployeeClient {
 
 	@Get("/department/{departmentId}")
-	List<Employee> findByDepartment(@Header("Authorization") String bearerToken, @Header("X-TRACE-ID") String traceId, Long departmentId);
+	List<Employee> findByDepartment(@Header("X-TRACE-ID") String traceId, Long departmentId);
 
 }

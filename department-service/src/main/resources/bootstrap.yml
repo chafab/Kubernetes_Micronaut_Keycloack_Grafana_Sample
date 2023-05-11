@@ -5,6 +5,10 @@ micronaut:
     enabled: true
   security:
     token:
+      propagation:
+        enabled: true
+        service-id-regex: "employee"
+        #service-id-regex: "service1|service2"
       roles-name: 'groups'
       jwt:
         enabled: true
@@ -12,19 +16,6 @@ micronaut:
           jwks:
             keycloak:
               url: 'http://nekonex-ingress.info/api/keycloak/realms/nekonex_realm/protocol/openid-connect/certs'
-  endpoints:
-    prometheus:
-      sensitive: false
-      enabled: true
-      details-visible: ANONYMOUS
-    health:
-      enabled: true
-      sensitive: false
-      details-visible: ANONYMOUS
-    metrics:
-      enabled: true
-      sensitive: false
-      details-visible: ANONYMOUS
   metrics:
     enabled: true
     export:
@@ -38,6 +29,19 @@ micronaut:
   openapi:
     views:
       enabled: true
+endpoints:
+  prometheus:
+    sensitive: false
+    enabled: true
+    details-visible: ANONYMOUS
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: ANONYMOUS
+  metrics:
+    enabled: true
+    sensitive: false
+    details-visible: ANONYMOUS
 kubernetes:
   client:
     config-maps:

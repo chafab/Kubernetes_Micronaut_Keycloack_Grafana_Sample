@@ -3,10 +3,7 @@ package com.nekonex.services.department.controller;
 import java.util.List;
 
 import io.micronaut.http.HttpRequest;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import org.slf4j.Logger;
@@ -99,12 +96,10 @@ public class DepartmentController {
 	})
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/organization/{organizationId}/with-employees")
-	public List<Department> findByOrganizationWithEmployees(HttpRequest<?> request, Long organizationId) {
-		String uuid = request.getAttribute("traceId").toString();
+	public List<Department> findByOrganizationWithEmployees(@RequestAttribute("traceId") String uuid, Long organizationId) {
 		LOGGER.info("Department find: organizationId={}, uuid{}", organizationId, uuid);
-		String bearerToken = request.getHeaders().getAuthorization().orElse(null);
 		List<Department> departments = repository.findByOrganization(organizationId);
-		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(bearerToken, uuid, d.getId())));
+		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(uuid, d.getId())));
 		return departments;
 	}
 
