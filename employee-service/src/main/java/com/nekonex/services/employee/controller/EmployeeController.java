@@ -7,6 +7,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,8 +115,8 @@ public class EmployeeController {
 	})
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/SecureHello")
-	public String hello() {
-		LOGGER.info("Secure hello");
+	public String hello(Authentication auth) {
+		LOGGER.info("Secure hello " + auth.getName());
 		return "Hello authenticated user~";
 	}
 

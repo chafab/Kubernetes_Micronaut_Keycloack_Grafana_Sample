@@ -5,6 +5,7 @@ import java.util.List;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,10 +110,9 @@ public class DepartmentController {
 	})
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/SecureHello")
-	public String hello() {
-		LOGGER.info("Secure hello");
+	public String hello(Authentication auth) {
+		LOGGER.info("Secure hello " + auth.getName());
 		return "Hello authenticated user~";
-
 	}
 
 	@Operation(summary = "Simple Hello endpoint for Authenticated or Anonymous users")

@@ -14,6 +14,8 @@ micronaut:
               url: 'http://nekonex-ingress.info/api/keycloak/realms/nekonex_realm/protocol/openid-connect/certs'
   metrics:
     enabled: true
+    tags:
+      app: employee
     export:
       prometheus:
         enabled: true

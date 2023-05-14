@@ -99,8 +99,8 @@
             <artifactId>micronaut-micrometer-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
+            <groupId>io.micronaut.micrometer</groupId>
+            <artifactId>micronaut-micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

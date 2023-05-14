@@ -1,5 +1,5 @@
 package com.nekonex.services.employee.security;
-
+/*
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
@@ -57,4 +57,4 @@ public class KeycloakUserDetailsMapper implements OauthAuthenticationMapper {
             return AuthenticationResponse.success(user.getUsername(), user.getRoles(), attrs);
         });
     }
-}
+}*/

@@ -4,6 +4,12 @@ metadata:
   name: monitoring
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: monitoring
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
@@ -15,15 +21,21 @@ data:
     scrape_configs:
       - job_name: 'job-prometheus'
         kubernetes_sd_configs:
-          - role: endpoints
+          - role: pod
         relabel_configs:
-          - source_labels: [__meta_kubernetes_service_label_monitor]
+          - source_labels: [__meta_kubernetes_pod_label_app]
             action: keep
             regex: .+
-          - source_labels: [__meta_kubernetes_endpoint_port_name]
-            action: keep
-            regex: http
         metrics_path: /prometheus
+        scheme: http
+      - job_name: 'job-prometheus2'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: .+
+        metrics_path: /metrics
         scheme: http
 ---
 apiVersion: apps/v1
@@ -41,6 +53,7 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:v2.43.1
@@ -74,3 +87,34 @@ spec:
       port: 9090
       targetPort: 9090
   type: NodePort
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: discoverer
+rules:
+  - apiGroups: [ "" ]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs: [ "get", "list", "watch" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-discoverer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: discoverer
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: monitoring
