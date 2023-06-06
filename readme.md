@@ -12,6 +12,11 @@ Our sample microservices-based system consists of the following modules:
 The following picture illustrates the architecture described above including Kubernetes objects.
 
 ![Microservices Diagram](doc/pictures/diagram.png)
+# About Grafana
+Grafana is a tool that allows to monitor the different services performances whether it's gathering container logs using loki
+or seeing metrics such as number of request per seconds and many more through Prometheus.  
+The Grafana documentation in the doc folder will show a brief overview of what can be achieved with it. 
+
 
 ## Documentation
 Documentation and steps to install and run the services is available under the doc directory
