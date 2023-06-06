@@ -23,16 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.function.Executable;
 
 @MicronautTest
 @Property(name = "in-memory-store.enabled", value = "true")
 @Requires(env = Environment.TEST)
 public class EmployeeControllerTests {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeControllerTests.class);
-
     @Inject
     @Client("/") // Use the custom ID here
     HttpClient client;
@@ -41,7 +37,7 @@ public class EmployeeControllerTests {
     void add() throws MalformedURLException, ExecutionException, InterruptedException {
         //User didn t login
         Employee employee2 = Instancio.of(Employee.class)
-                .ignore(Select.field(Employee::getId))
+                .ignore(Select.field(Employee::id))
                 .create();
         Executable e = () -> client.toBlocking().exchange(HttpRequest.POST("/api/employees", employee2).accept(TEXT_PLAIN));
 
@@ -57,17 +53,14 @@ public class EmployeeControllerTests {
         thrown = assertThrows(HttpClientResponseException.class, e);
         assertEquals(UNAUTHORIZED, thrown.getStatus());
 
-
-        LOGGER.info("2");
-
         Employee employee = Instancio.of(Employee.class)
-                .ignore(Select.field(Employee::getId))
+                .ignore(Select.field(Employee::id))
                 .create();
         employee = client.toBlocking()
                 .retrieve(HttpRequest.POST("/api/employees", employee)
                         .basicAuth("john", "secret"), Employee.class);
         assertNotNull(employee);
-        assertNotNull(employee.getId());
+        assertNotNull(employee.id());
     }
 
     @Test
@@ -91,7 +84,7 @@ public class EmployeeControllerTests {
         assertEquals(val, 1);
         //add a user and verify count
         Employee employee = Instancio.of(Employee.class)
-                .ignore(Select.field(Employee::getId))
+                .ignore(Select.field(Employee::id))
                 .create();
         employee = client.toBlocking()
                 .retrieve(HttpRequest.POST("/api/employees", employee)

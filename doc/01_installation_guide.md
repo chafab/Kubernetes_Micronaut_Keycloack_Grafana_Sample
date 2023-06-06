@@ -16,27 +16,26 @@ if you have any issues with minikube when starting please use the following comm
 sudo usermod -aG docker $USER && newgrp docker
 ```
 
-Before running any application in default namespace we need to set the appropriate permissions.  
-Micronaut Kubernetes requires read access to pods, endpoints, secrets, services and config maps.  
-For development needs we may set the highest level of permissions by creating ClusterRoleBinding pointing to cluster-admin role.
-```
-kubectl create clusterrolebinding admin --clusterrole=cluster-admin --serviceaccount=default:default
-```
 We also need to enable ingress, as it will be used as our gateway
 ```
 minikube addons enable ingress
 ```
 
 The commands below are used to set the databases, volumes and loadbalancer that will be used to access the services  
+`kubectl apply -f 00-services-deployment.yaml` : the command is binding the cluster-admin role to the "default" service account in the "default" namespace. This means that any pod that doesn't specify a service account and runs in the "default" namespace will have cluster-admin permissions
 `kubectl apply -f 01-storage-deployment.yaml` : creates a storage for the postgresdb  
 `kubectl apply -f 02-postgres-deployment.yaml` : creates the postgresdb that can be used by keycloak. keycloak also support MySQL  
 `kubectl apply -f 03-mongo-deployment.yaml` : creates the MongoDB that will be used in our services. Note that usually each service should have it's own DB which is not the case here.  
 `kubectl apply -f 04-keycloak-deployment.yaml` : creates the keycloak service and can be accessed by forwarding the port and using the login admin password admin
 `kubectl apply -f 05-haproxy-ingress.yaml` : creates the ingress component that can be used to access the different services
 `kubectl apply -f 06-ingress-deployment.yaml` : creates the ingress component that can be used to access the different services
-TODO Write the other yaml files that needs to be applied and write a description 
+`kubectl apply -f 07-grafana.yaml` : creates the grafana pod, this component is used to view logs from loki and chart metrics coming from services such as http request counts or CPU usage
+`kubectl apply -f 08-loki.yaml` : loki is used for aggregating the logs and assigning labels to them
+`kubectl apply -f 09-fluentd.yaml` : fluentd is a daemonset responsible for gathering the logs and sending them to loki
+`kubectl apply -f 10-prometheus.yaml` : prometheus is a time-series DB which makes it a good candidate for storing metrics
+
 `kubectl get deployments -o yaml` : get all deployments
-if there are any issues with 6th deployment file apply :
+
 Now each of our services can be run in each directory by running
 
 The above commands can also be executed with the `install.sh` script  

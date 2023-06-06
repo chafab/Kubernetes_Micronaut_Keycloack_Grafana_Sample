@@ -1,4 +1,4 @@
-package com.nekonex.services.employee.repository;
+package com.nekonex.services.repository;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import com.nekonex.services.employee.model.Employee;

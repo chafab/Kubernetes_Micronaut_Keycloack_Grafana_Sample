@@ -10,7 +10,6 @@ import com.mongodb.client.model.Filters;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.context.scope.Refreshable;
-import org.bson.codecs.LongCodec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -20,7 +19,7 @@ import com.nekonex.services.employee.model.Employee;
 
 @Refreshable
 @Requires(missingProperty = "in-memory-store.enabled")
-public class EmployeeMongoRepository implements EmployeeRepository {
+public class EmployeeMongoRepository implements IEmployeeRepository {
 
 
 	private MongoClient mongoClient;
@@ -35,13 +34,15 @@ public class EmployeeMongoRepository implements EmployeeRepository {
 	}
 
 	public Employee add(Employee employee) {
-		employee.setId(repository().countDocuments() + 1);
-		repository().insertOne(employee);
-		return employee;
+		Long newId = repository().countDocuments() + 1;
+		Employee newEmployee = new Employee(newId, employee.organizationId(), employee.departmentId(),
+				employee.name(), employee.age(), employee.position());
+		repository().insertOne(newEmployee);
+		return newEmployee;
 	}
 
 	public Employee findById(Long id) {
-		return repository().find().first();
+		return repository().find(Filters.eq("_id", id)).first();
 	}
 
 	public List<Employee> findAll() {

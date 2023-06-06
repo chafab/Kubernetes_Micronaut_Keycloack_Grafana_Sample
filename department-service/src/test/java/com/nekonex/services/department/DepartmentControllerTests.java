@@ -1,5 +1,9 @@
 package com.nekonex.services.department;
 
+import com.nekonex.services.department.model.Department;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.env.Environment;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -10,26 +14,19 @@ import jakarta.inject.Inject;
 import org.instancio.Instancio;
 import org.instancio.Select;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.function.Executable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import com.nekonex.services.department.model.Department;
 
 import static io.micronaut.http.HttpStatus.UNAUTHORIZED;
 import static io.micronaut.http.MediaType.TEXT_PLAIN;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MicronautTest
-@Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Property(name = "in-memory-store.enabled", value = "true")
+@Requires(env = Environment.TEST)
 public class DepartmentControllerTests {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentControllerTests.class);
-
     @Inject
     EmbeddedServer server;
 
@@ -37,15 +34,12 @@ public class DepartmentControllerTests {
     @Client("/")
     HttpClient client;
 
-    private static Long id;
-
     @Test
-    @Order(1)
     void add() {
 
         Department department2 = Instancio.of(Department.class)
-                .set(Select.field(Department::getOrganizationId), 1L)
-                .ignore(Select.field(Department::getId))
+                .set(Select.field(Department::organizationId), 1L)
+                .ignore(Select.field(Department::id))
                 .create();
         //User didn t login
         Executable e = () -> client.toBlocking().exchange(HttpRequest.POST("/api/departments", department2).accept(TEXT_PLAIN));
@@ -63,42 +57,39 @@ public class DepartmentControllerTests {
         assertEquals(UNAUTHORIZED, thrown.getStatus());
 
 
-        LOGGER.info("2");
-
         Department department = Instancio.of(Department.class)
-                .set(Select.field(Department::getOrganizationId), 1L)
-                .ignore(Select.field(Department::getId))
+                .set(Select.field(Department::organizationId), 1L)
+                .ignore(Select.field(Department::id))
                 .create();
         department = client.toBlocking()
                 .retrieve(HttpRequest.POST("/api/departments", department)
                         .basicAuth("john", "secret"), Department.class);
         assertNotNull(department);
-        assertNotNull(department.getId());
-        id = department.getId();
+        assertNotNull(department.id());
     }
 
     @Test
-    @Order(2)
     void findAll() {
+        add();
         Department[] departments = client.toBlocking()
                 .retrieve(HttpRequest.GET("/api/departments")
                         .basicAuth("john", "secret"), Department[].class);
-        assertTrue(departments.length > 0);
+        assertTrue(departments.length == 2);
     }
 
     @Test
-    @Order(3)
     void findById() {
+        add();
         Department department = client.toBlocking()
-                .retrieve(HttpRequest.GET("/api/departments/" + id)
+                .retrieve(HttpRequest.GET("/api/departments/10" )
                         .basicAuth("john", "secret"), Department.class);
         assertNotNull(department);
-        assertNotNull(department.getId());
+        assertNotNull(department.id());
     }
 
     @Test
-    @Order(4)
     void findByOrganization() {
+        add();
         Department[] departments = client.toBlocking()
                 .retrieve(HttpRequest.GET("/api/departments/organization/" + 1L)
                         .basicAuth("john", "secret"), Department[].class);

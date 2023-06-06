@@ -4,7 +4,7 @@ import com.nekonex.services.employee.model.Employee;
 
 import java.util.List;
 
-public interface EmployeeRepository {
+public interface IEmployeeRepository {
 
     Employee add(Employee employee);
     Employee findById(Long id);

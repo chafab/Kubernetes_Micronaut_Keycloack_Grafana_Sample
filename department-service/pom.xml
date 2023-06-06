@@ -51,6 +51,10 @@
             <artifactId>micronaut-management</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.micronaut.data</groupId>
+            <artifactId>micronaut-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.micronaut.mongodb</groupId>
             <artifactId>micronaut-mongo-sync</artifactId>
         </dependency>

@@ -1,7 +1,7 @@
 package com.nekonex.services.employee.controller;
 
 import com.nekonex.services.employee.model.Employee;
-import com.nekonex.services.employee.repository.EmployeeRepository;
+import com.nekonex.services.employee.repository.IEmployeeRepository;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -9,25 +9,22 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.inject.Inject;
-import java.util.List;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.info.Contact;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/api/employees")
+@Slf4j
 @OpenAPIDefinition(
 		info = @Info(
 				title = "Employee Controller",
@@ -38,10 +35,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 )
 public class EmployeeController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeController.class);
-
 	@Inject
-	EmployeeRepository repository;
+	IEmployeeRepository repository;
 
 	@Operation(summary = "Add an employee")
 	@ApiResponses(value = {
@@ -50,7 +45,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Post
 	public Employee add(@Body @RequestBody(description = "Employee") Employee employee) {
-		LOGGER.info("Employee add: {}", employee);
+		log.info("Employee add: {}", employee);
 		return repository.add(employee);
 	}
 
@@ -61,7 +56,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/{id}")
 	public Employee findById(Long id) {
-		LOGGER.info("Employee find: id={}", id);
+		log.info("Employee find: id={}", id);
 		return repository.findById(id);
 	}
 
@@ -72,7 +67,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get
 	public List<Employee> findAll() {
-		LOGGER.info("Employees find");
+		log.info("Employees find");
 		return repository.findAll();
 	}
 
@@ -83,7 +78,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/department/{departmentId}")
 	public List<Employee> findByDepartment(Long departmentId) {
-		LOGGER.info("Employees find: departmentId={}", departmentId);
+		log.info("Employees find: departmentId={}", departmentId);
 		return repository.findByDepartment(departmentId);
 	}
 
@@ -94,7 +89,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/organization/{organizationId}")
 	public List<Employee> findByOrganization(Long organizationId) {
-		LOGGER.info("Employees find: organizationId={}", organizationId);
+		log.info("Employees find: organizationId={}", organizationId);
 		return repository.findByOrganization(organizationId);
 	}
 
@@ -105,7 +100,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/count")
 	long count() {
-		LOGGER.info("Count");
+		log.info("Count");
 		return repository.count();
 	}
 
@@ -116,7 +111,7 @@ public class EmployeeController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/SecureHello")
 	public String hello(Authentication auth) {
-		LOGGER.info("Secure hello " + auth.getName());
+		log.info("Secure hello " + auth.getName());
 		return "Hello authenticated user~";
 	}
 
@@ -127,7 +122,7 @@ public class EmployeeController {
 	@Secured(SecurityRule.IS_ANONYMOUS)
 	@Get("/AnonymousHello")
 	public String helloAnonymous() {
-		LOGGER.info("Anonymous hello");
+		log.info("Anonymous hello");
 		return "Hello Anonymous";
 	}
 }

@@ -1,31 +1,27 @@
 package com.nekonex.services.department.controller;
 
-import java.util.List;
-
-import io.micronaut.http.HttpRequest;
+import com.nekonex.services.department.client.EmployeeClient;
+import com.nekonex.services.department.model.Department;
+import com.nekonex.services.department.repository.IDepartmentRepository;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.nekonex.services.department.client.EmployeeClient;
-import com.nekonex.services.department.model.Department;
-import com.nekonex.services.department.repository.DepartmentRepository;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.info.Contact;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/api/departments")
+@Slf4j
 @OpenAPIDefinition(
 		info = @Info(
 				title = "Department Controller",
@@ -35,13 +31,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 		)
 )
 public class DepartmentController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentController.class);
-
-	private DepartmentRepository repository;
+	private IDepartmentRepository repository;
 	private EmployeeClient employeeClient;
 
-	DepartmentController(DepartmentRepository repository, EmployeeClient employeeClient) {
+	DepartmentController(IDepartmentRepository repository, EmployeeClient employeeClient) {
 		this.repository = repository;
 		this.employeeClient = employeeClient;
 	}
@@ -53,7 +46,7 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Post
 	public Department add(@Body @RequestBody(description = "Department") Department department) {
-		LOGGER.info("Department add: {}", department);
+		log.info("Department add: {}", department);
 		return repository.add(department);
 	}
 
@@ -64,7 +57,7 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/{id}")
 	public Department findById(Long id) {
-		LOGGER.info("Department find: id={}", id+1);
+		log.info("Department find: id={}", id+1);
 		return repository.findById(id);
 		//return null; //test
 	}
@@ -76,7 +69,7 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get
 	public List<Department> findAll() {
-		LOGGER.info("Department find");
+		log.info("Department find");
 		return repository.findAll();
 	}
 
@@ -87,7 +80,7 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/organization/{organizationId}")
 	public List<Department> findByOrganization(Long organizationId) {
-		LOGGER.info("Department find: organizationId={}", organizationId);
+		log.info("Department find: organizationId={}", organizationId);
 		return repository.findByOrganization(organizationId);
 	}
 
@@ -98,9 +91,9 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/organization/{organizationId}/with-employees")
 	public List<Department> findByOrganizationWithEmployees(@RequestAttribute("traceId") String uuid, Long organizationId) {
-		LOGGER.info("Department find: organizationId={}, uuid{}", organizationId, uuid);
+		log.info("Department find: organizationId={}, uuid{}", organizationId, uuid);
 		List<Department> departments = repository.findByOrganization(organizationId);
-		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(uuid, d.getId())));
+		departments.forEach(d -> d.setEmployees(employeeClient.findByDepartment(uuid, d.id())));
 		return departments;
 	}
 
@@ -111,7 +104,7 @@ public class DepartmentController {
 	@SecurityRequirement(name = "BearerAuth", scopes = {})
 	@Get("/SecureHello")
 	public String hello(Authentication auth) {
-		LOGGER.info("Secure hello " + auth.getName());
+		log.info("Secure hello " + auth.getName());
 		return "Hello authenticated user~";
 	}
 
@@ -122,7 +115,7 @@ public class DepartmentController {
 	@Secured(SecurityRule.IS_ANONYMOUS)
 	@Get("/AnonymousHello")
 	public String helloAnonymous() {
-		LOGGER.info("Anonymous hello");
+		log.info("Anonymous hello");
 		return "Hello Anonymous";
 	}
 }

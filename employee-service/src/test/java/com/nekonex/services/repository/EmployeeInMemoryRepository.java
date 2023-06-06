@@ -1,6 +1,7 @@
-package com.nekonex.services.employee.repository;
+package com.nekonex.services.repository;
 
 import com.nekonex.services.employee.model.Employee;
+import com.nekonex.services.employee.repository.IEmployeeRepository;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.context.scope.Refreshable;
 import jakarta.inject.Inject;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 //The following class is only used for tests
 @Refreshable
 @Requires(property = "in-memory-store.enabled", value = "true", defaultValue = "false")
-public class EmployeeInMemoryRepository implements EmployeeRepository {
+public class EmployeeInMemoryRepository implements IEmployeeRepository {
 
     @Inject
     private EmployeesInitialList employeesInitialList;
@@ -22,15 +23,17 @@ public class EmployeeInMemoryRepository implements EmployeeRepository {
 
     @Override
     public Employee add(Employee employee) {
-        employee.setId((long) (employees.size() + 1));
+        long newId = employees.size() + 1;
+        Employee newEmployee = new Employee(newId, employee.organizationId(), employee.departmentId(),
+                employee.name(), employee.age(), employee.position());
         employees.add(employee);
-        return employee;
+        return newEmployee;
     }
 
     @Override
     public Employee findById(Long id) {
         return employees.stream()
-                .filter(employee -> employee.getId().equals(id))
+                .filter(employee -> employee.id().equals(id))
                 .findAny()
                 .orElse(null);
     }
@@ -43,14 +46,14 @@ public class EmployeeInMemoryRepository implements EmployeeRepository {
     @Override
     public List<Employee> findByDepartment(Long departmentId) {
         return employees.stream()
-                .filter(employee -> employee.getDepartmentId().equals(departmentId))
+                .filter(employee -> employee.departmentId().equals(departmentId))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Employee> findByOrganization(Long organizationId) {
         return employees.stream()
-                .filter(employee -> employee.getOrganizationId().equals(organizationId))
+                .filter(employee -> employee.organizationId().equals(organizationId))
                 .collect(Collectors.toList());
     }
 

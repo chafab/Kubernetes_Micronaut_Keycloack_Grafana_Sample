@@ -1,3 +1,15 @@
+test:
+  departments:
+    - id: 10
+      name: "human resource"
+      organizationId: 1
+      employees:
+        - id: 11
+          name: Fabrice Chabance
+          age: 41
+          position: developer
+          departmentId: 1
+          organizationId: 1
 mongodb:
   database: test
   collection: department

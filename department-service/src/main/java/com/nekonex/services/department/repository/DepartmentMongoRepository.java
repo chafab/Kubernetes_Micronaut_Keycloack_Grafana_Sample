@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -16,7 +17,8 @@ import com.nekonex.services.department.model.Department;
 import java.util.ArrayList;
 import java.util.List;
 @Singleton
-public class DepartmentRepository {
+@Requires(missingProperty = "in-memory-store.enabled")
+public class DepartmentMongoRepository implements IDepartmentRepository {
 
 	@Property(name = "mongodb.database")
 	private String mongodbDatabase;
@@ -25,18 +27,19 @@ public class DepartmentRepository {
 
 	private MongoClient mongoClient;
 
-	DepartmentRepository(MongoClient mongoClient) {
+	DepartmentMongoRepository(MongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 
 	public Department add(Department department) {
-		department.setId(repository().countDocuments() + 1);
-		repository().insertOne(department);
-		return department;
+		Long newId = repository().countDocuments() + 1;
+		Department newDepartment = new Department(newId, department.organizationId(), department.name(), department.employees());
+		repository().insertOne(newDepartment);
+		return newDepartment;
 	}
 
 	public Department findById(Long id) {
-		return repository().find().first();
+		return repository().find(Filters.eq("_id", id)).first();
 	}
 
 	public List<Department> findAll() {
